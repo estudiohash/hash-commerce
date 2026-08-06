@@ -627,45 +627,30 @@ function initSetup() {
 }
 
 async function submitSetup() {
-  const companyName = document.getElementById('setup-company-name').value.trim();
-  const storeName   = document.getElementById('setup-store-name').value.trim();
-  const status      = document.getElementById('setup-status');
+  const storeName = document.getElementById("setup-store-name").value.trim();
+  const status    = document.getElementById("setup-status");
 
-  if (!companyName || !storeName) {
-    setStatus(status, 'Completá nombre de empresa y tienda.', 'error');
+  if (!storeName) {
+    setStatus(status, "Ingresá el nombre de tu tienda.", "error");
+    document.getElementById("setup-store-name").focus();
     return;
   }
 
-  const btn = document.getElementById('setup-submit');
+  const btn = document.getElementById("setup-submit");
   btn.disabled = true;
-  setStatus(status, 'Creando tienda...', '');
+  setStatus(status, "Creando tienda...", "");
 
   try {
-    const fd = new FormData();
-    fd.append('company_name', companyName);
-    fd.append('store_name',   storeName);
-
-    const logoFile  = document.getElementById('setup-logo-input')?.files[0];
-    const bannerFile = document.getElementById('setup-banner-input')?.files[0];
-    if (logoFile)   fd.append('logo',   logoFile);
-    if (bannerFile) fd.append('banner', bannerFile);
-
-    const token = getToken();
-    const res = await fetch(API_URL + '/commerce/store', {
-      method:  'POST',
-      headers: { 'Authorization': 'Bearer ' + token },
-      body:    fd,
+    storeData = await apiFetch("/commerce/setup", {
+      method: "POST",
+      body: JSON.stringify({ store_name: storeName }),
     });
-    if (!res.ok) throw new Error('Error ' + res.status);
-    storeData = await res.json();
-
-    const sn = document.getElementById('sidebar-store-name');
+    const sn = document.getElementById("sidebar-store-name");
     if (sn) sn.textContent = storeName;
-
-    showScreen('app');
-    navigateTo('dashboard');
+    showScreen("app");
+    navigateTo("dashboard");
   } catch {
-    setStatus(status, 'No se pudo crear la tienda. Intentá de nuevo.', 'error');
+    setStatus(status, "No se pudo crear la tienda. Intentá de nuevo.", "error");
   } finally {
     btn.disabled = false;
   }
