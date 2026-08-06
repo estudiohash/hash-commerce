@@ -205,12 +205,13 @@
             <label for="settings-store-name">Nombre de la tienda</label>
             <input type="text" id="settings-store-name" maxlength="80" autocomplete="off">
           </div>
-          <div class="settings-group">
-            <label for="settings-company-name">Nombre de la empresa</label>
-            <input type="text" id="settings-company-name" maxlength="80" autocomplete="off">
-          </div>
           <button type="button" class="btn-primary" id="settings-save-btn">Guardar cambios</button>
           <p id="settings-status" aria-live="polite"></p>
+
+          <div class="settings-group" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+            <label>Tamaño de texto <span id="settings-font-label" style="color:var(--lime);font-weight:600;"></span></label>
+            <input type="range" id="settings-font-size" min="13" max="22" step="1" style="width:100%;accent-color:var(--lime);cursor:pointer;margin-top:8px;">
+          </div>
         </div>
       </section>
 

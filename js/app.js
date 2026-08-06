@@ -603,16 +603,15 @@ function renderSettings() {
 }
 
 async function saveSettings() {
-  const storeName   = document.getElementById('settings-store-name').value.trim();
-  const companyName = document.getElementById('settings-company-name').value.trim();
-  const status      = document.getElementById('settings-status');
+  const storeName = document.getElementById('settings-store-name').value.trim();
+  const status    = document.getElementById('settings-status');
 
   const btn = document.getElementById('settings-save-btn');
   btn.disabled = true;
   setStatus(status, 'Guardando...', '');
 
   try {
-    const updated = await apiSaveStore({ store_name: storeName, company_name: companyName });
+    const updated = await apiSaveStore({ store_name: storeName });
     storeData = { ...storeData, ...updated };
     const sn = document.getElementById('sidebar-store-name');
     if (sn) sn.textContent = storeName || storeData.store_name || 'Mi Tienda';
@@ -933,6 +932,10 @@ function setStatus(el, msg, type) {
 // ── Init ────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Aplicar tamaño de fuente guardado
+  const savedFont = localStorage.getItem('hcommerce_font_size') || '16';
+  document.documentElement.style.setProperty('--font-size-base', savedFont + 'px');
+
   // 1. Callback OAuth (si venimos del redirect de Google)
   await handleAuthCallback();
 
