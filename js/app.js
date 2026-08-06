@@ -331,7 +331,11 @@ async function openProductModal(product = null) {
   renderCategorySelect(product?.category_id || null);
 
   // Resetear slots de imagen
-  const imageUrls = product?.images || (product?.image_url ? [product.image_url] : []);
+  const imageUrls = product?.images || [
+    product?.image_url   || null,
+    product?.image_url_2 || null,
+    product?.image_url_3 || null,
+  ].filter(Boolean);
   document.querySelectorAll('.img-slot').forEach((slot, i) => {
     const input   = slot.querySelector('.img-slot-input');
     const preview = slot.querySelector('.img-slot-preview');
@@ -385,7 +389,11 @@ async function saveProduct() {
   setStatus(status, 'Guardando...', '');
 
   // Subir hasta 3 imágenes
-  const existingImages = editingProduct?.images || (editingProduct?.image_url ? [editingProduct.image_url] : []);
+  const existingImages = [
+    editingProduct?.image_url   || null,
+    editingProduct?.image_url_2 || null,
+    editingProduct?.image_url_3 || null,
+  ];
   const imageUrls = [...existingImages];
   const slots = document.querySelectorAll('.img-slot');
   for (let i = 0; i < slots.length; i++) {
