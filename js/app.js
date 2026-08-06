@@ -4,7 +4,7 @@
  * Auth: mismo patrón que HASH AI (Google OAuth → Bearer token)
  */
 
-const API_URL = 'https://hash-commerce-api.up.railway.app'; // ← cambiar por el back real
+const API_URL = 'https://hash-cloud-production.up.railway.app';
 
 // ── Sesión ─────────────────────────────────────────────────────────────────
 
@@ -64,7 +64,7 @@ async function fetchIdentity() {
 }
 
 function loginWithGoogle() {
-  window.location.href = API_URL + '/auth/login';
+  window.location.href = API_URL + '/auth/login?next=commerce';
 }
 
 function logout() {
@@ -95,41 +95,41 @@ async function apiFetch(path, opts = {}) {
 
 // ── API: Tienda ─────────────────────────────────────────────────────────────
 
-async function apiGetStore()           { return apiFetch('/store'); }
-async function apiSaveStore(data)      { return apiFetch('/store', { method: 'PUT', body: JSON.stringify(data) }); }
+async function apiGetStore()           { return apiFetch('/commerce/store'); }
+async function apiSaveStore(data)      { return apiFetch('/commerce/store', { method: 'PUT', body: JSON.stringify(data) }); }
 
 // ── API: Productos ──────────────────────────────────────────────────────────
 
-async function apiListProducts()       { return apiFetch('/products'); }
-async function apiGetProduct(id)       { return apiFetch('/products/' + id); }
-async function apiCreateProduct(data)  { return apiFetch('/products', { method: 'POST', body: JSON.stringify(data) }); }
-async function apiUpdateProduct(id, d) { return apiFetch('/products/' + id, { method: 'PUT', body: JSON.stringify(d) }); }
-async function apiDeleteProduct(id)    { return apiFetch('/products/' + id, { method: 'DELETE' }); }
+async function apiListProducts()       { return apiFetch('/commerce/products'); }
+async function apiGetProduct(id)       { return apiFetch('/commerce/products/' + id); }
+async function apiCreateProduct(data)  { return apiFetch('/commerce/products', { method: 'POST', body: JSON.stringify(data) }); }
+async function apiUpdateProduct(id, d) { return apiFetch('/commerce/products/' + id, { method: 'PUT', body: JSON.stringify(d) }); }
+async function apiDeleteProduct(id)    { return apiFetch('/commerce/products/' + id, { method: 'DELETE' }); }
 
 async function apiUploadProductImage(file) {
   const fd = new FormData();
   fd.append('image', file);
-  return apiFetch('/products/upload-image', { method: 'POST', body: fd });
+  return apiFetch('/commerce/products/upload-image', { method: 'POST', body: fd });
 }
 
 // ── API: Pedidos ────────────────────────────────────────────────────────────
 
-async function apiListOrders()                  { return apiFetch('/orders'); }
+async function apiListOrders()                  { return apiFetch('/commerce/orders'); }
 async function apiUpdateOrderStatus(id, status) {
-  return apiFetch('/orders/' + id + '/status', { method: 'PATCH', body: JSON.stringify({ status }) });
+  return apiFetch('/commerce/orders/' + id + '/status', { method: 'PATCH', body: JSON.stringify({ status }) });
 }
 
 // ── API: Clientes ───────────────────────────────────────────────────────────
 
-async function apiListCustomers()      { return apiFetch('/customers'); }
+async function apiListCustomers()      { return apiFetch('/commerce/customers'); }
 
 // ── API: Conectores ─────────────────────────────────────────────────────────
 
 async function apiSaveConnector(name, credentials) {
-  return apiFetch('/connectors/' + name, { method: 'PUT', body: JSON.stringify(credentials) });
+  return apiFetch('/commerce/connectors/' + name, { method: 'PUT', body: JSON.stringify(credentials) });
 }
 
-async function apiGetConnectors()      { return apiFetch('/connectors'); }
+async function apiGetConnectors()      { return apiFetch('/commerce/connectors'); }
 
 async function apiCreateMpLink(amount, description) {
   return apiFetch('/payments/mercadopago/create', {
@@ -140,7 +140,7 @@ async function apiCreateMpLink(amount, description) {
 
 // ── API: Métricas ───────────────────────────────────────────────────────────
 
-async function apiGetMetrics()         { return apiFetch('/metrics'); }
+async function apiGetMetrics()         { return apiFetch('/commerce/metrics'); }
 
 // ── Estado global ───────────────────────────────────────────────────────────
 
@@ -651,7 +651,7 @@ async function submitSetup() {
     if (bannerFile) fd.append('banner', bannerFile);
 
     const token = getToken();
-    const res = await fetch(API_URL + '/store/setup', {
+    const res = await fetch(API_URL + '/commerce/store', {
       method:  'POST',
       headers: { 'Authorization': 'Bearer ' + token },
       body:    fd,
