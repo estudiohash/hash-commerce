@@ -66,6 +66,16 @@
         <button type="button" class="nav-item" data-section="settings">
           <span class="nav-icon">◌</span> Ajustes
         </button>
+
+        <!-- Mi tienda -->
+        <button type="button" class="nav-item nav-item--parent" id="mystore-toggle">
+          <span class="nav-icon">⬟</span> Mi tienda <span id="mystore-arrow">›</span>
+        </button>
+        <div id="mystore-submenu" hidden>
+          <button type="button" class="nav-item nav-item--child" data-section="mystore-design">
+            Interfaz
+          </button>
+        </div>
       </nav>
 
       <div id="sidebar-footer">
@@ -213,6 +223,46 @@
             <input type="range" id="settings-font-size" min="13" max="22" step="1" style="width:100%;accent-color:var(--lime);cursor:pointer;margin-top:8px;">
           </div>
         </div>
+      </section>
+
+      <!-- Mi tienda - Interfaz -->
+      <section id="section-mystore-design" class="section" hidden>
+        <div class="section-toolbar">
+          <h3>Interfaz de tu tienda</h3>
+        </div>
+        <div id="mystore-link-box" style="margin-bottom:24px;padding:16px;background:var(--surface-2,#1a1a1a);border-radius:12px;border:1px solid var(--border);">
+          <p style="margin:0 0 6px;color:var(--text-dim);font-size:.85rem;">Tu tienda pública está en:</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span id="mystore-public-url" style="color:var(--lime);font-weight:600;word-break:break-all;"></span>
+            <button type="button" id="mystore-copy-btn" style="flex-shrink:0;padding:5px 12px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--text-dim);font-size:.78rem;cursor:pointer;">Copiar</button>
+          </div>
+        </div>
+
+        <p style="color:var(--text-dim);margin-bottom:16px;">Elegí una plantilla para tu tienda:</p>
+        <div id="templates-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px;">
+
+          <div class="template-card" data-template="minimal" style="border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .2s;">
+            <div style="height:80px;background:linear-gradient(135deg,#111,#222);border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">◻</div>
+            <div style="font-weight:600;">Minimal</div>
+            <div style="font-size:.8rem;color:var(--text-dim);">Limpio y simple</div>
+          </div>
+
+          <div class="template-card" data-template="bold" style="border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .2s;">
+            <div style="height:80px;background:linear-gradient(135deg,#0d2b0d,#1a4a1a);border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">◈</div>
+            <div style="font-weight:600;">Bold</div>
+            <div style="font-size:.8rem;color:var(--text-dim);">Impactante y oscuro</div>
+          </div>
+
+          <div class="template-card" data-template="bright" style="border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .2s;">
+            <div style="height:80px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">⬡</div>
+            <div style="font-weight:600;">Bright</div>
+            <div style="font-size:.8rem;color:var(--text-dim);">Colorido y moderno</div>
+          </div>
+
+        </div>
+
+        <button type="button" id="publish-btn" class="btn-primary" style="padding:12px 32px;font-size:1rem;">Publicar tienda</button>
+        <p id="publish-status" style="margin-top:10px;" aria-live="polite"></p>
       </section>
 
     </main>

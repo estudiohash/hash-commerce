@@ -217,12 +217,13 @@ function navigateTo(section) {
 
   // Título del header
   const titles = {
-    dashboard:  'Dashboard',
-    products:   'Productos',
-    orders:     'Pedidos',
-    customers:  'Clientes',
-    connectors: 'Conectores',
-    settings:   'Ajustes',
+    dashboard:       'Dashboard',
+    products:        'Productos',
+    orders:          'Pedidos',
+    customers:       'Clientes',
+    connectors:      'Conectores',
+    settings:        'Ajustes',
+    'mystore-design':'Mi tienda · Interfaz',
   };
   const el = document.getElementById('section-title');
   if (el) el.textContent = titles[section] || section;
@@ -238,7 +239,8 @@ async function loadSection(section) {
     case 'orders':     await loadOrders();      break;
     case 'customers':  await loadCustomers();   break;
     case 'connectors': await loadConnectors();  break;
-    case 'settings':   renderSettings();        break;
+    case 'settings':        renderSettings();       break;
+    case 'mystore-design':  loadMyStoreDesign();    break;
   }
 }
 
@@ -946,6 +948,80 @@ function setStatus(el, msg, type) {
                : '';
 }
 
+// ── Mi tienda ───────────────────────────────────────────────────────────────
+
+function initMyStoreMenu() {
+  const toggle  = document.getElementById('mystore-toggle');
+  const submenu = document.getElementById('mystore-submenu');
+  const arrow   = document.getElementById('mystore-arrow');
+
+  toggle?.addEventListener('click', () => {
+    const open = !submenu.hasAttribute('hidden');
+    if (open) {
+      submenu.setAttribute('hidden', '');
+      arrow.textContent = '›';
+    } else {
+      submenu.removeAttribute('hidden');
+      arrow.textContent = '⌄';
+    }
+  });
+}
+
+let selectedTemplate = null;
+
+function loadMyStoreDesign() {
+  // Mostrar link público
+  const slug = storeData.slug || slugify(storeData.store_name || 'mi-tienda');
+  const url  = `${window.location.origin}/store/${slug}`;
+  const urlEl = document.getElementById('mystore-public-url');
+  if (urlEl) urlEl.textContent = url;
+
+  // Copiar link
+  document.getElementById('mystore-copy-btn')?.addEventListener('click', () => {
+    navigator.clipboard.writeText(url).catch(() => fallbackCopy(url));
+    const btn = document.getElementById('mystore-copy-btn');
+    btn.textContent = '✓ Copiado';
+    setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+  });
+
+  // Selección de plantilla
+  selectedTemplate = storeData.template || null;
+  document.querySelectorAll('.template-card').forEach(card => {
+    if (card.dataset.template === selectedTemplate) {
+      card.style.borderColor = 'var(--lime)';
+    }
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.template-card').forEach(c => c.style.borderColor = 'var(--border)');
+      card.style.borderColor = 'var(--lime)';
+      selectedTemplate = card.dataset.template;
+    });
+  });
+
+  // Publicar
+  const publishBtn = document.getElementById('publish-btn');
+  publishBtn?.addEventListener('click', async () => {
+    const status = document.getElementById('publish-status');
+    publishBtn.disabled = true;
+    setStatus(status, 'Publicando...', '');
+    try {
+      await apiSaveStore({ ...storeData, template: selectedTemplate, published: true });
+      storeData.template  = selectedTemplate;
+      storeData.published = true;
+      setStatus(status, '✓ Tienda publicada. Ya podés compartir el link.', 'ok');
+    } catch {
+      setStatus(status, 'No se pudo publicar. Intentá de nuevo.', 'error');
+    } finally {
+      publishBtn.disabled = false;
+    }
+  });
+}
+
+function slugify(text) {
+  return text.toLowerCase().trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-');
+}
+
 // ── Init ────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -983,7 +1059,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     initSidebar();
     initProductModal();
     initOrdersSection();
-    initSetup(); // por si el usuario va a ajustes a cambiar logo
+    initSetup();
+    initMyStoreMenu(); // por si el usuario va a ajustes a cambiar logo
     showScreen('app');
     navigateTo('dashboard');
 
