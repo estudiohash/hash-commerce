@@ -598,8 +598,25 @@ async function savePaypalCredentials() {
 // ── Ajustes ─────────────────────────────────────────────────────────────────
 
 function renderSettings() {
-  document.getElementById('settings-store-name').value  = storeData.store_name  || '';
-  document.getElementById('settings-company-name').value = storeData.company_name || '';
+  const sn = document.getElementById('settings-store-name');
+  if (sn) sn.value = storeData.store_name || storeData.display_name || '';
+
+  const fontRange = document.getElementById('settings-font-size');
+  const fontLabel = document.getElementById('settings-font-label');
+  if (fontRange && !fontRange._bound) {
+    fontRange._bound = true;
+    const saved = localStorage.getItem('hcommerce_font_size') || '16';
+    fontRange.value = saved;
+    if (fontLabel) fontLabel.textContent = saved + 'px';
+    fontRange.addEventListener('input', () => {
+      const val = fontRange.value;
+      if (fontLabel) fontLabel.textContent = val + 'px';
+      document.documentElement.style.setProperty('--font-size-base', val + 'px');
+      localStorage.setItem('hcommerce_font_size', val);
+    });
+  } else if (fontRange && fontLabel) {
+    fontLabel.textContent = fontRange.value + 'px';
+  }
 }
 
 async function saveSettings() {
