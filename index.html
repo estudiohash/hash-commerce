@@ -16,7 +16,7 @@
   <!-- ── Login ─────────────────────────────────────────────────────────── -->
   <div id="login-screen" hidden>
     <div id="login-box">
-      <img src="assets/logo_hash.png" alt="HASH" id="login-logo">
+      <img src="assets/logo.png" alt="HASH" id="login-logo">
       <h1>HASH Commerce</h1>
       <p>Creá y gestioná tu tienda online.</p>
       <button type="button" id="login-btn">Entrar con Google</button>
@@ -26,7 +26,7 @@
   <!-- ── Setup (primera vez) ───────────────────────────────────────────── -->
   <div id="setup-screen" hidden>
     <div id="setup-box">
-      <img src="assets/logo_hash.png" alt="HASH" id="setup-logo">
+      <img src="assets/logo.png" alt="HASH" id="setup-logo">
       <h2>Configurá tu tienda</h2>
       <p class="setup-subtitle">Solo tarda un segundo. Después podés cambiar todo desde Ajustes.</p>
 
@@ -43,7 +43,7 @@
 
     <aside id="sidebar">
       <div id="sidebar-header">
-        <img src="assets/logo_hash.png" alt="HASH" id="sidebar-logo">
+        <img src="assets/logo.png" alt="HASH" id="sidebar-logo">
         <span id="sidebar-store-name">Mi Tienda</span>
       </div>
 
@@ -231,17 +231,39 @@
       <label for="product-stock">Stock</label>
       <input type="number" id="product-stock" min="0" step="1">
 
-      <label for="product-category">Categoría <span class="optional">(opcional)</span></label>
-      <input type="text" id="product-category" maxlength="80" autocomplete="off">
+      <label for="product-category">Categoría</label>
+      <div id="category-field">
+        <select id="product-category">
+          <option value="">Sin categoría</option>
+        </select>
+        <button type="button" id="add-category-btn" class="btn-add-category">+ Nueva categoría</button>
+        <div id="new-category-row" hidden style="display:flex;gap:8px;margin-top:6px;">
+          <input type="text" id="new-category-input" placeholder="Nombre de la categoría" maxlength="80" autocomplete="off" style="flex:1;">
+          <button type="button" id="new-category-save" class="btn-primary" style="padding:8px 16px;font-size:.82rem;">Agregar</button>
+          <button type="button" id="new-category-cancel" style="padding:8px 12px;background:transparent;border:none;color:var(--text-dim);cursor:pointer;">✕</button>
+        </div>
+      </div>
 
       <label for="product-description">Descripción <span class="optional">(opcional)</span></label>
       <textarea id="product-description" rows="3"></textarea>
 
-      <label>Imagen <span class="optional">(opcional)</span></label>
-      <div class="upload-area" id="product-img-area">
-        <input type="file" id="product-img-input" accept="image/*" hidden>
-        <img id="product-img-preview" style="display:none;max-width:100%;max-height:120px;border-radius:8px;" alt="Preview">
-        <span>Subir imagen</span>
+      <label>Imágenes <span class="optional">(hasta 3)</span></label>
+      <div id="product-images-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+        <div class="upload-area img-slot" data-slot="0">
+          <input type="file" class="img-slot-input" accept="image/*" hidden>
+          <img class="img-slot-preview" style="display:none;max-width:100%;max-height:90px;border-radius:8px;" alt="">
+          <span>+ Imagen</span>
+        </div>
+        <div class="upload-area img-slot" data-slot="1">
+          <input type="file" class="img-slot-input" accept="image/*" hidden>
+          <img class="img-slot-preview" style="display:none;max-width:100%;max-height:90px;border-radius:8px;" alt="">
+          <span>+ Imagen</span>
+        </div>
+        <div class="upload-area img-slot" data-slot="2">
+          <input type="file" class="img-slot-input" accept="image/*" hidden>
+          <img class="img-slot-preview" style="display:none;max-width:100%;max-height:90px;border-radius:8px;" alt="">
+          <span>+ Imagen</span>
+        </div>
       </div>
 
       <p id="product-modal-status" aria-live="polite"></p>

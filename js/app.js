@@ -88,11 +88,7 @@ async function apiFetch(path, opts = {}) {
   });
   if (res.status === 401) { clearToken(); showScreen('login'); throw new Error('No autorizado'); }
   if (res.status === 403) { showUpgradeModal(); throw new Error('Plan insuficiente'); }
-  if (!res.ok) {
-    let detail = 'Error ' + res.status;
-    try { const d = await res.json(); detail = d.detail || detail; } catch {}
-    throw new Error(detail);
-  }
+  if (!res.ok) throw new Error('Error ' + res.status);
   const ct = res.headers.get('Content-Type') || '';
   return ct.includes('application/json') ? res.json() : res.text();
 }
@@ -152,6 +148,7 @@ let activeSection = 'dashboard';
 let products      = [];
 let orders        = [];
 let customers     = [];
+let categories    = [];
 let connectors    = {};
 let storeData     = {};
 let editingProduct = null; // null = nuevo, object = edición
@@ -248,7 +245,6 @@ async function loadSection(section) {
 // ── Dashboard ───────────────────────────────────────────────────────────────
 
 async function loadDashboard() {
-  // metrics endpoint no implementado aún — usar datos locales
   try {
     const metrics = await apiGetMetrics();
     renderMetrics(metrics);
@@ -313,27 +309,48 @@ function renderProductTable() {
   `).join('');
 }
 
-function openProductModal(product = null) {
+async function openProductModal(product = null) {
   editingProduct = product;
-  const modal    = document.getElementById('product-modal');
-  const title    = document.getElementById('product-modal-title');
-  const status   = document.getElementById('product-modal-status');
+  const modal  = document.getElementById('product-modal');
+  const title  = document.getElementById('product-modal-title');
+  const status = document.getElementById('product-modal-status');
 
   title.textContent  = product ? 'Editar producto' : 'Nuevo producto';
   status.textContent = '';
   status.className   = '';
 
-  // Rellenar campos
   document.getElementById('product-name').value        = product?.name        || '';
   document.getElementById('product-price').value       = product?.price       || '';
   document.getElementById('product-stock').value       = product?.stock       ?? '';
-  document.getElementById('product-category').value    = product?.category    || '';
   document.getElementById('product-description').value = product?.description || '';
 
-  // Preview de imagen
-  const preview = document.getElementById('product-img-preview');
-  preview.src     = product?.image_url || '';
-  preview.style.display = product?.image_url ? 'block' : 'none';
+  // Cargar categorías si no las tenemos
+  if (!categories.length) {
+    try { categories = await apiFetch('/commerce/categories'); } catch { categories = []; }
+  }
+  renderCategorySelect(product?.category_id || null);
+
+  // Resetear slots de imagen
+  const imageUrls = product?.images || (product?.image_url ? [product.image_url] : []);
+  document.querySelectorAll('.img-slot').forEach((slot, i) => {
+    const input   = slot.querySelector('.img-slot-input');
+    const preview = slot.querySelector('.img-slot-preview');
+    const label   = slot.querySelector('span');
+    input.value = '';
+    if (imageUrls[i]) {
+      preview.src = imageUrls[i];
+      preview.style.display = 'block';
+      if (label) label.style.display = 'none';
+    } else {
+      preview.src = '';
+      preview.style.display = 'none';
+      if (label) label.style.display = '';
+    }
+  });
+
+  // Ocultar fila nueva categoría
+  document.getElementById('new-category-row')?.setAttribute('hidden', '');
+  document.getElementById('new-category-input') && (document.getElementById('new-category-input').value = '');
 
   modal.removeAttribute('hidden');
   document.getElementById('product-name').focus();
@@ -350,7 +367,6 @@ async function saveProduct() {
   const stock       = document.getElementById('product-stock').value !== ''
                         ? parseInt(document.getElementById('product-stock').value, 10)
                         : null;
-  const category    = document.getElementById('product-category').value.trim();
   const description = document.getElementById('product-description').value.trim();
   const status      = document.getElementById('product-modal-status');
 
@@ -803,34 +819,70 @@ function fallbackCopy(text) {
 // ── Modal de producto ───────────────────────────────────────────────────────
 
 function initProductModal() {
-  // Botón guardar
   document.getElementById('product-save-btn')?.addEventListener('click', saveProduct);
-
-  // Cancelar / cerrar
   document.getElementById('product-cancel-btn')?.addEventListener('click', closeProductModal);
   document.getElementById('product-modal')?.addEventListener('click', e => {
     if (e.target === document.getElementById('product-modal')) closeProductModal();
   });
-
-  // Enter en nombre
   document.getElementById('product-name')?.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeProductModal();
   });
 
-  // Preview de imagen al seleccionar archivo
-  const imgInput   = document.getElementById('product-img-input');
-  const imgArea    = document.getElementById('product-img-area');
-  const imgPreview = document.getElementById('product-img-preview');
-
-  imgArea?.addEventListener('click', () => imgInput?.click());
-  imgInput?.addEventListener('change', () => {
-    const file = imgInput.files[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    imgPreview.src = url;
-    imgPreview.style.display = 'block';
-    imgArea.querySelector('span').textContent = file.name;
+  // Slots de imagen (hasta 3)
+  document.querySelectorAll('.img-slot').forEach(slot => {
+    const input   = slot.querySelector('.img-slot-input');
+    const preview = slot.querySelector('.img-slot-preview');
+    const label   = slot.querySelector('span');
+    slot.addEventListener('click', () => input.click());
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      if (!file) return;
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+      if (label) label.style.display = 'none';
+    });
   });
+
+  // Nueva categoría
+  document.getElementById('add-category-btn')?.addEventListener('click', () => {
+    document.getElementById('new-category-row').removeAttribute('hidden');
+    document.getElementById('new-category-row').style.display = 'flex';
+    document.getElementById('new-category-input').focus();
+  });
+  document.getElementById('new-category-cancel')?.addEventListener('click', () => {
+    document.getElementById('new-category-row').setAttribute('hidden', '');
+    document.getElementById('new-category-input').value = '';
+  });
+  document.getElementById('new-category-save')?.addEventListener('click', saveNewCategory);
+  document.getElementById('new-category-input')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveNewCategory();
+    if (e.key === 'Escape') document.getElementById('new-category-cancel').click();
+  });
+}
+
+async function saveNewCategory() {
+  const input = document.getElementById('new-category-input');
+  const name  = input.value.trim();
+  if (!name) return;
+  try {
+    const cat = await apiFetch('/commerce/categories', { method: 'POST', body: JSON.stringify({ name }) });
+    categories = [...(categories || []), cat];
+    renderCategorySelect(cat.id);
+    document.getElementById('new-category-row').setAttribute('hidden', '');
+    input.value = '';
+  } catch {
+    alert('No se pudo guardar la categoría.');
+  }
+}
+
+function renderCategorySelect(selectedId = null) {
+  const sel = document.getElementById('product-category');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Sin categoría</option>' +
+    (categories || []).map(c =>
+      `<option value="${c.id}"${c.id === selectedId ? ' selected' : ''}>${c.name}</option>`
+    ).join('');
+  if (selectedId) sel.value = selectedId;
 }
 
 // ── Órdenes: delegación de eventos ─────────────────────────────────────────

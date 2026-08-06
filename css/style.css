@@ -706,3 +706,46 @@ select {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Categorías ─────────────────────────────────────────────────────── */
+
+#category-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn-add-category {
+  align-self: flex-start;
+  padding: 5px 12px;
+  border: 1px dashed var(--border-soft);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms;
+}
+
+.btn-add-category:hover {
+  border-color: var(--lime);
+  color: var(--lime);
+}
+
+#new-category-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+/* ── Slots de imagen ────────────────────────────────────────────────── */
+
+.img-slot {
+  min-height: 90px;
+  padding: 12px;
+  position: relative;
+}
+
+.img-slot span {
+  font-size: 0.75rem;
+}
