@@ -363,7 +363,7 @@ async function saveProduct() {
   submitBtn.disabled = true;
   setStatus(status, 'Guardando...', '');
 
-  // Subir imagen si hay una seleccionada
+  // Subir imagen si hay una seleccionada (si falla, se guarda sin imagen)
   const imgInput = document.getElementById('product-img-input');
   let imageUrl = editingProduct?.image_url || null;
   if (imgInput.files[0]) {
@@ -371,9 +371,7 @@ async function saveProduct() {
       const uploaded = await apiUploadProductImage(imgInput.files[0]);
       imageUrl = uploaded.url;
     } catch {
-      setStatus(status, 'No se pudo subir la imagen.', 'error');
-      submitBtn.disabled = false;
-      return;
+      // Cloudinary no configurado aún — continuar sin imagen
     }
   }
 
@@ -563,8 +561,10 @@ async function savePaypalCredentials() {
 // ── Ajustes ─────────────────────────────────────────────────────────────────
 
 function renderSettings() {
-  document.getElementById('settings-store-name').value  = storeData.store_name  || '';
-  document.getElementById('settings-company-name').value = storeData.company_name || '';
+  const sn = document.getElementById('settings-store-name');
+  const cn = document.getElementById('settings-company-name');
+  if (sn) sn.value = storeData.store_name  || '';
+  if (cn) cn.value = storeData.company_name || '';
 }
 
 async function saveSettings() {
