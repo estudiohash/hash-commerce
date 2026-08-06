@@ -88,7 +88,11 @@ async function apiFetch(path, opts = {}) {
   });
   if (res.status === 401) { clearToken(); showScreen('login'); throw new Error('No autorizado'); }
   if (res.status === 403) { showUpgradeModal(); throw new Error('Plan insuficiente'); }
-  if (!res.ok) throw new Error('Error ' + res.status);
+  if (!res.ok) {
+    let detail = 'Error ' + res.status;
+    try { const d = await res.json(); detail = d.detail || detail; } catch {}
+    throw new Error(detail);
+  }
   const ct = res.headers.get('Content-Type') || '';
   return ct.includes('application/json') ? res.json() : res.text();
 }
@@ -244,6 +248,7 @@ async function loadSection(section) {
 // ── Dashboard ───────────────────────────────────────────────────────────────
 
 async function loadDashboard() {
+  // metrics endpoint no implementado aún — usar datos locales
   try {
     const metrics = await apiGetMetrics();
     renderMetrics(metrics);
@@ -363,7 +368,7 @@ async function saveProduct() {
   submitBtn.disabled = true;
   setStatus(status, 'Guardando...', '');
 
-  // Subir imagen si hay una seleccionada (si falla, se guarda sin imagen)
+  // Subir imagen si hay una seleccionada
   const imgInput = document.getElementById('product-img-input');
   let imageUrl = editingProduct?.image_url || null;
   if (imgInput.files[0]) {
@@ -371,7 +376,9 @@ async function saveProduct() {
       const uploaded = await apiUploadProductImage(imgInput.files[0]);
       imageUrl = uploaded.url;
     } catch {
-      // Cloudinary no configurado aún — continuar sin imagen
+      setStatus(status, 'No se pudo subir la imagen.', 'error');
+      submitBtn.disabled = false;
+      return;
     }
   }
 
@@ -561,10 +568,8 @@ async function savePaypalCredentials() {
 // ── Ajustes ─────────────────────────────────────────────────────────────────
 
 function renderSettings() {
-  const sn = document.getElementById('settings-store-name');
-  const cn = document.getElementById('settings-company-name');
-  if (sn) sn.value = storeData.store_name  || '';
-  if (cn) cn.value = storeData.company_name || '';
+  document.getElementById('settings-store-name').value  = storeData.store_name  || '';
+  document.getElementById('settings-company-name').value = storeData.company_name || '';
 }
 
 async function saveSettings() {
