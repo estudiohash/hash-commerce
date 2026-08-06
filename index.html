@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HASH Commerce</title>
+  <meta name="description" content="Tu tienda online con HASH.">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ── Login ─────────────────────────────────────────────────────────── -->
+  <div id="login-screen" hidden>
+    <div id="login-box">
+      <img src="assets/logo.png" alt="HASH" id="login-logo">
+      <h1>HASH Commerce</h1>
+      <p>Creá y gestioná tu tienda online.</p>
+      <button type="button" id="login-btn">Entrar con Google</button>
+    </div>
+  </div>
+
+  <!-- ── Setup (primera vez) ───────────────────────────────────────────── -->
+  <div id="setup-screen" hidden>
+    <div id="setup-box">
+      <img src="assets/logo.png" alt="HASH" id="setup-logo">
+      <h2>Configurá tu tienda</h2>
+      <p class="setup-subtitle">Solo la primera vez. Después podés cambiar todo desde Ajustes.</p>
+
+      <label for="setup-company-name">Nombre de la empresa</label>
+      <input type="text" id="setup-company-name" placeholder="Ej: Mi Marca" maxlength="80" autocomplete="off">
+
+      <label for="setup-store-name">Nombre de la tienda</label>
+      <input type="text" id="setup-store-name" placeholder="Ej: Mi Tienda" maxlength="80" autocomplete="off">
+
+      <label>Logo <span class="optional">(opcional)</span></label>
+      <div class="upload-area" id="logo-upload-area">
+        <input type="file" id="logo-input" accept="image/*" hidden>
+        <img id="logo-preview" hidden alt="Logo preview">
+        <span id="logo-placeholder">Subir logo · PNG o JPG recomendado</span>
+      </div>
+
+      <label>Banner <span class="optional">(opcional)</span></label>
+      <p class="upload-hint">Medida recomendada: 1200 × 400 px</p>
+      <div class="upload-area upload-area--wide" id="banner-upload-area">
+        <input type="file" id="banner-input" accept="image/*" hidden>
+        <img id="banner-preview" hidden alt="Banner preview">
+        <span id="banner-placeholder">Subir banner</span>
+      </div>
+
+      <p id="setup-status" aria-live="polite"></p>
+      <button type="button" id="setup-submit">Crear tienda</button>
+    </div>
+  </div>
+
+  <!-- ── App principal ─────────────────────────────────────────────────── -->
+  <div id="app" hidden>
+
+    <aside id="sidebar">
+      <div id="sidebar-header">
+        <img src="assets/logo.png" alt="HASH" id="sidebar-logo">
+        <span id="sidebar-store-name">Mi Tienda</span>
+      </div>
+
+      <nav id="sidebar-nav">
+        <button type="button" class="nav-item active" data-section="dashboard">
+          <span class="nav-icon">◈</span> Dashboard
+        </button>
+        <button type="button" class="nav-item" data-section="products">
+          <span class="nav-icon">◻</span> Productos
+        </button>
+        <button type="button" class="nav-item" data-section="orders">
+          <span class="nav-icon">◷</span> Pedidos
+        </button>
+        <button type="button" class="nav-item" data-section="customers">
+          <span class="nav-icon">◎</span> Clientes
+        </button>
+        <button type="button" class="nav-item" data-section="connectors">
+          <span class="nav-icon">⬡</span> Conectores
+        </button>
+        <button type="button" class="nav-item" data-section="settings">
+          <span class="nav-icon">◌</span> Ajustes
+        </button>
+      </nav>
+
+      <div id="sidebar-footer">
+        <button type="button" id="logout-btn">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <div id="sidebar-overlay"></div>
+
+    <main id="main">
+      <header id="main-header">
+        <button type="button" id="hamburger" aria-label="Abrir menú">
+          <span></span><span></span><span></span>
+        </button>
+        <h2 id="section-title">Dashboard</h2>
+      </header>
+
+      <!-- Dashboard -->
+      <section id="section-dashboard" class="section">
+        <div id="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-label">Productos</span>
+            <span class="metric-value" id="metric-products">—</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Pedidos</span>
+            <span class="metric-value" id="metric-orders">—</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Clientes</span>
+            <span class="metric-value" id="metric-customers">—</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Ventas totales</span>
+            <span class="metric-value" id="metric-revenue">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Productos -->
+      <section id="section-products" class="section" hidden>
+        <div class="section-toolbar">
+          <h3>Productos</h3>
+          <button type="button" class="btn-primary" id="new-product-btn">+ Nuevo producto</button>
+        </div>
+        <div id="products-list"></div>
+      </section>
+
+      <!-- Pedidos -->
+      <section id="section-orders" class="section" hidden>
+        <div class="section-toolbar">
+          <h3>Pedidos</h3>
+        </div>
+        <div id="orders-list"></div>
+      </section>
+
+      <!-- Clientes -->
+      <section id="section-customers" class="section" hidden>
+        <div class="section-toolbar">
+          <h3>Clientes</h3>
+        </div>
+        <div id="customers-list"></div>
+      </section>
+
+      <!-- Conectores -->
+      <section id="section-connectors" class="section" hidden>
+        <div class="section-toolbar">
+          <h3>Conectores</h3>
+        </div>
+        <div id="connectors-list">
+          <div class="connector-card" data-provider="mercadopago">
+            <span class="connector-name">Mercado Pago</span>
+            <span class="connector-status" id="status-mercadopago">No conectado</span>
+            <button type="button" class="btn-secondary connector-btn" data-provider="mercadopago">Conectar</button>
+          </div>
+          <div class="connector-card" data-provider="paypal">
+            <span class="connector-name">PayPal</span>
+            <span class="connector-status" id="status-paypal">No conectado</span>
+            <button type="button" class="btn-secondary connector-btn" data-provider="paypal">Conectar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ajustes -->
+      <section id="section-settings" class="section" hidden>
+        <div class="section-toolbar">
+          <h3>Ajustes</h3>
+        </div>
+        <div id="settings-content">
+          <div class="settings-group">
+            <label>Nombre de la tienda</label>
+            <input type="text" id="settings-store-name" maxlength="80" autocomplete="off">
+          </div>
+          <div class="settings-group">
+            <label>Moneda</label>
+            <select id="settings-currency">
+              <option value="ARS">ARS — Peso argentino</option>
+              <option value="USD">USD — Dólar</option>
+              <option value="MXN">MXN — Peso mexicano</option>
+              <option value="CLP">CLP — Peso chileno</option>
+            </select>
+          </div>
+          <button type="button" class="btn-primary" id="settings-save-btn">Guardar cambios</button>
+          <p id="settings-status" aria-live="polite"></p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ── Modal: nuevo/editar producto ──────────────────────────────────── -->
+  <div id="product-modal" hidden role="dialog" aria-modal="true">
+    <div id="product-modal-box">
+      <h3 id="product-modal-title">Nuevo producto</h3>
+
+      <label for="product-name">Nombre</label>
+      <input type="text" id="product-name" maxlength="120" autocomplete="off">
+
+      <label for="product-price">Precio</label>
+      <input type="number" id="product-price" min="0" step="0.01">
+
+      <label for="product-stock">Stock</label>
+      <input type="number" id="product-stock" min="0" step="1">
+
+      <label for="product-description">Descripción <span class="optional">(opcional)</span></label>
+      <textarea id="product-description" rows="3"></textarea>
+
+      <label>Imagen <span class="optional">(opcional)</span></label>
+      <div class="upload-area" id="product-image-area">
+        <input type="file" id="product-image-input" accept="image/*" hidden>
+        <img id="product-image-preview" hidden alt="Preview">
+        <span id="product-image-placeholder">Subir imagen</span>
+      </div>
+
+      <p id="product-modal-status" aria-live="polite"></p>
+      <div class="modal-actions">
+        <button type="button" id="product-modal-cancel">Cancelar</button>
+        <button type="button" id="product-modal-submit" class="btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
