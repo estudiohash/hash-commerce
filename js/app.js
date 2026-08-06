@@ -384,21 +384,27 @@ async function saveProduct() {
   submitBtn.disabled = true;
   setStatus(status, 'Guardando...', '');
 
-  // Subir imagen si hay una seleccionada
-  const imgInput = document.getElementById('product-img-input');
-  let imageUrl = editingProduct?.image_url || null;
-  if (imgInput.files[0]) {
-    try {
-      const uploaded = await apiUploadProductImage(imgInput.files[0]);
-      imageUrl = uploaded.url;
-    } catch {
-      setStatus(status, 'No se pudo subir la imagen.', 'error');
-      submitBtn.disabled = false;
-      return;
+  // Subir hasta 3 imágenes
+  const existingImages = editingProduct?.images || (editingProduct?.image_url ? [editingProduct.image_url] : []);
+  const imageUrls = [...existingImages];
+  const slots = document.querySelectorAll('.img-slot');
+  for (let i = 0; i < slots.length; i++) {
+    const input = slots[i].querySelector('.img-slot-input');
+    const file = input?.files?.[0];
+    if (file) {
+      try {
+        const uploaded = await apiUploadProductImage(file);
+        imageUrls[i] = uploaded.url;
+      } catch (err) {
+        setStatus(status, 'No se pudo subir la imagen ' + (i+1) + ': ' + (err.message || 'error'), 'error');
+        submitBtn.disabled = false;
+        return;
+      }
     }
   }
 
-  const payload = { name, price, stock, category, description, image_url: imageUrl };
+  const categoryId = document.getElementById('product-category').value || null;
+  const payload = { name, price, stock, category_id: categoryId, description, images: imageUrls, image_url: imageUrls[0] || null };
 
   try {
     if (editingProduct) {
