@@ -20,6 +20,7 @@
   --radius-pill: 999px;
   --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
   --sidebar-w: 220px;
+  --font-size-base: 16px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,7 +28,7 @@
 html, body {
   height: 100%;
   font-family: "Inter", system-ui, sans-serif;
-  font-size: 16px;
+  font-size: var(--font-size-base);
   line-height: 1.45;
   color: var(--text);
   background: var(--black);
