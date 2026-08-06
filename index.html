@@ -28,31 +28,13 @@
     <div id="setup-box">
       <img src="assets/logo.png" alt="HASH" id="setup-logo">
       <h2>Configurá tu tienda</h2>
-      <p class="setup-subtitle">Solo la primera vez. Después podés cambiar todo desde Ajustes.</p>
-
-      <label for="setup-company-name">Nombre de la empresa</label>
-      <input type="text" id="setup-company-name" placeholder="Ej: Mi Marca" maxlength="80" autocomplete="off">
+      <p class="setup-subtitle">Solo tarda un segundo. Después podés cambiar todo desde Ajustes.</p>
 
       <label for="setup-store-name">Nombre de la tienda</label>
       <input type="text" id="setup-store-name" placeholder="Ej: Mi Tienda" maxlength="80" autocomplete="off">
 
-      <label>Logo <span class="optional">(opcional)</span></label>
-      <div class="upload-area" id="logo-upload-area">
-        <input type="file" id="logo-input" accept="image/*" hidden>
-        <img id="logo-preview" hidden alt="Logo preview">
-        <span id="logo-placeholder">Subir logo · PNG o JPG recomendado</span>
-      </div>
-
-      <label>Banner <span class="optional">(opcional)</span></label>
-      <p class="upload-hint">Medida recomendada: 1200 × 400 px</p>
-      <div class="upload-area upload-area--wide" id="banner-upload-area">
-        <input type="file" id="banner-input" accept="image/*" hidden>
-        <img id="banner-preview" hidden alt="Banner preview">
-        <span id="banner-placeholder">Subir banner</span>
-      </div>
-
       <p id="setup-status" aria-live="polite"></p>
-      <button type="button" id="setup-submit">Crear tienda</button>
+      <button type="button" id="setup-submit" class="btn-primary">Crear tienda</button>
     </div>
   </div>
 
@@ -129,7 +111,18 @@
           <h3>Productos</h3>
           <button type="button" class="btn-primary" id="new-product-btn">+ Nuevo producto</button>
         </div>
-        <div id="products-list"></div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Categoría</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody"></tbody>
+        </table>
       </section>
 
       <!-- Pedidos -->
@@ -137,7 +130,18 @@
         <div class="section-toolbar">
           <h3>Pedidos</h3>
         </div>
-        <div id="orders-list"></div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cliente</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Cambiar estado</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody"></tbody>
+        </table>
       </section>
 
       <!-- Clientes -->
@@ -145,7 +149,16 @@
         <div class="section-toolbar">
           <h3>Clientes</h3>
         </div>
-        <div id="customers-list"></div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Pedidos</th>
+            </tr>
+          </thead>
+          <tbody id="customers-tbody"></tbody>
+        </table>
       </section>
 
       <!-- Conectores -->
@@ -154,16 +167,31 @@
           <h3>Conectores</h3>
         </div>
         <div id="connectors-list">
-          <div class="connector-card" data-provider="mercadopago">
-            <span class="connector-name">Mercado Pago</span>
-            <span class="connector-status" id="status-mercadopago">No conectado</span>
-            <button type="button" class="btn-secondary connector-btn" data-provider="mercadopago">Conectar</button>
+
+          <div class="connector-card">
+            <div style="flex:1">
+              <div class="connector-name">Mercado Pago</div>
+              <div class="connector-status" id="mp-status">No conectado</div>
+              <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;max-width:320px;">
+                <input type="text" id="mp-access-token" placeholder="Access Token de producción" autocomplete="off">
+                <p id="mp-save-status" aria-live="polite"></p>
+                <button type="button" class="btn-primary" id="mp-save-btn" style="align-self:flex-start;">Guardar</button>
+              </div>
+            </div>
           </div>
-          <div class="connector-card" data-provider="paypal">
-            <span class="connector-name">PayPal</span>
-            <span class="connector-status" id="status-paypal">No conectado</span>
-            <button type="button" class="btn-secondary connector-btn" data-provider="paypal">Conectar</button>
+
+          <div class="connector-card">
+            <div style="flex:1">
+              <div class="connector-name">PayPal</div>
+              <div class="connector-status" id="paypal-status">No conectado</div>
+              <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;max-width:320px;">
+                <input type="text" id="paypal-client-id" placeholder="Client ID" autocomplete="off">
+                <p id="paypal-save-status" aria-live="polite"></p>
+                <button type="button" class="btn-primary" id="paypal-save-btn" style="align-self:flex-start;">Guardar</button>
+              </div>
+            </div>
           </div>
+
         </div>
       </section>
 
@@ -174,17 +202,12 @@
         </div>
         <div id="settings-content">
           <div class="settings-group">
-            <label>Nombre de la tienda</label>
+            <label for="settings-store-name">Nombre de la tienda</label>
             <input type="text" id="settings-store-name" maxlength="80" autocomplete="off">
           </div>
           <div class="settings-group">
-            <label>Moneda</label>
-            <select id="settings-currency">
-              <option value="ARS">ARS — Peso argentino</option>
-              <option value="USD">USD — Dólar</option>
-              <option value="MXN">MXN — Peso mexicano</option>
-              <option value="CLP">CLP — Peso chileno</option>
-            </select>
+            <label for="settings-company-name">Nombre de la empresa</label>
+            <input type="text" id="settings-company-name" maxlength="80" autocomplete="off">
           </div>
           <button type="button" class="btn-primary" id="settings-save-btn">Guardar cambios</button>
           <p id="settings-status" aria-live="polite"></p>
@@ -208,20 +231,23 @@
       <label for="product-stock">Stock</label>
       <input type="number" id="product-stock" min="0" step="1">
 
+      <label for="product-category">Categoría <span class="optional">(opcional)</span></label>
+      <input type="text" id="product-category" maxlength="80" autocomplete="off">
+
       <label for="product-description">Descripción <span class="optional">(opcional)</span></label>
       <textarea id="product-description" rows="3"></textarea>
 
       <label>Imagen <span class="optional">(opcional)</span></label>
-      <div class="upload-area" id="product-image-area">
-        <input type="file" id="product-image-input" accept="image/*" hidden>
-        <img id="product-image-preview" hidden alt="Preview">
-        <span id="product-image-placeholder">Subir imagen</span>
+      <div class="upload-area" id="product-img-area">
+        <input type="file" id="product-img-input" accept="image/*" hidden>
+        <img id="product-img-preview" style="display:none;max-width:100%;max-height:120px;border-radius:8px;" alt="Preview">
+        <span>Subir imagen</span>
       </div>
 
       <p id="product-modal-status" aria-live="polite"></p>
       <div class="modal-actions">
-        <button type="button" id="product-modal-cancel">Cancelar</button>
-        <button type="button" id="product-modal-submit" class="btn-primary">Guardar</button>
+        <button type="button" id="product-cancel-btn">Cancelar</button>
+        <button type="button" id="product-save-btn" class="btn-primary">Guardar</button>
       </div>
     </div>
   </div>
