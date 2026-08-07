@@ -75,6 +75,9 @@
           <button type="button" class="nav-item nav-item--child" data-section="mystore-design">
             Interfaz
           </button>
+          <button type="button" class="nav-item nav-item--child" data-section="mystore-branding">
+            Branding
+          </button>
         </div>
       </nav>
 
@@ -238,31 +241,59 @@
           </div>
         </div>
 
-        <p style="color:var(--text-dim);margin-bottom:16px;">Elegí una plantilla para tu tienda:</p>
         <div id="templates-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px;">
-
-          <div class="template-card" data-template="minimal" style="border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .2s;">
-            <div style="height:80px;background:linear-gradient(135deg,#111,#222);border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">◻</div>
-            <div style="font-weight:600;">Minimal</div>
-            <div style="font-size:.8rem;color:var(--text-dim);">Limpio y simple</div>
-          </div>
-
-          <div class="template-card" data-template="bold" style="border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .2s;">
+          <div class="template-card" data-template="bold" style="border:2px solid var(--lime);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .2s;">
             <div style="height:80px;background:linear-gradient(135deg,#0d2b0d,#1a4a1a);border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">◈</div>
             <div style="font-weight:600;">Bold</div>
             <div style="font-size:.8rem;color:var(--text-dim);">Impactante y oscuro</div>
           </div>
-
-          <div class="template-card" data-template="bright" style="border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .2s;">
-            <div style="height:80px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">⬡</div>
-            <div style="font-weight:600;">Bright</div>
-            <div style="font-size:.8rem;color:var(--text-dim);">Colorido y moderno</div>
-          </div>
-
         </div>
 
         <button type="button" id="publish-btn" class="btn-primary" style="padding:12px 32px;font-size:1rem;">Publicar tienda</button>
         <p id="publish-status" style="margin-top:10px;" aria-live="polite"></p>
+      </section>
+
+      <!-- Mi tienda - Branding -->
+      <section id="section-mystore-branding" class="section" hidden>
+        <div class="section-toolbar">
+          <h3>Branding</h3>
+        </div>
+
+        <!-- Logo -->
+        <div class="settings-group" style="margin-bottom:28px;">
+          <label style="display:block;margin-bottom:8px;font-weight:600;">Logo de la tienda</label>
+          <div id="branding-logo-preview" style="width:120px;height:120px;border:2px dashed var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;overflow:hidden;background:var(--surface-2,#1a1a1a);cursor:pointer;">
+            <img id="branding-logo-img" src="" alt="" style="max-width:100%;max-height:100%;display:none;object-fit:contain;">
+            <span id="branding-logo-placeholder" style="color:var(--text-dim);font-size:.82rem;text-align:center;padding:8px;">+ Subir logo</span>
+          </div>
+          <input type="file" id="branding-logo-input" accept="image/*" hidden>
+          <button type="button" class="btn-primary" id="branding-logo-btn" style="align-self:flex-start;width:auto;padding:8px 20px;">Cambiar logo</button>
+          <p id="branding-logo-status" aria-live="polite" style="margin-top:8px;"></p>
+        </div>
+
+        <!-- Banner -->
+        <div class="settings-group" style="margin-bottom:28px;">
+          <label style="display:block;margin-bottom:8px;font-weight:600;">Banner de la tienda</label>
+          <div id="branding-banner-preview" style="width:100%;max-width:560px;height:160px;border:2px dashed var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;overflow:hidden;background:var(--surface-2,#1a1a1a);cursor:pointer;">
+            <img id="branding-banner-img" src="" alt="" style="width:100%;height:100%;display:none;object-fit:cover;">
+            <span id="branding-banner-placeholder" style="color:var(--text-dim);font-size:.82rem;">+ Subir banner</span>
+          </div>
+          <input type="file" id="branding-banner-input" accept="image/*" hidden>
+          <button type="button" class="btn-primary" id="branding-banner-btn" style="align-self:flex-start;width:auto;padding:8px 20px;">Cambiar banner</button>
+          <p id="branding-banner-status" aria-live="polite" style="margin-top:8px;"></p>
+        </div>
+
+        <!-- Categorías -->
+        <div class="settings-group">
+          <label style="display:block;margin-bottom:8px;font-weight:600;">Categorías</label>
+          <div id="branding-categories-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;"></div>
+          <div style="display:flex;gap:8px;max-width:360px;">
+            <input type="text" id="branding-new-category" placeholder="Nueva categoría" maxlength="80" autocomplete="off" style="flex:1;">
+            <button type="button" class="btn-primary" id="branding-add-category-btn" style="width:auto;padding:8px 16px;">+ Agregar</button>
+          </div>
+          <p id="branding-category-status" aria-live="polite" style="margin-top:8px;"></p>
+        </div>
+
       </section>
 
     </main>

@@ -223,7 +223,8 @@ function navigateTo(section) {
     customers:       'Clientes',
     connectors:      'Conectores',
     settings:        'Ajustes',
-    'mystore-design':'Mi tienda · Interfaz',
+    'mystore-design':    'Mi tienda · Interfaz',
+    'mystore-branding':  'Mi tienda · Branding',
   };
   const el = document.getElementById('section-title');
   if (el) el.textContent = titles[section] || section;
@@ -240,7 +241,8 @@ async function loadSection(section) {
     case 'customers':  await loadCustomers();   break;
     case 'connectors': await loadConnectors();  break;
     case 'settings':        renderSettings();       break;
-    case 'mystore-design':  loadMyStoreDesign();    break;
+    case 'mystore-design':    loadMyStoreDesign();    break;
+    case 'mystore-branding':  brandingLoaded = false; loadMyStoreBranding();  break;
   }
 }
 
@@ -1020,6 +1022,147 @@ function slugify(text) {
   return text.toLowerCase().trim()
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-');
+}
+
+// ── Branding ─────────────────────────────────────────────────────────────────
+
+let brandingLoaded = false;
+
+async function loadMyStoreBranding() {
+  if (brandingLoaded) return;
+  brandingLoaded = true;
+
+  // Mostrar logo actual si existe
+  if (storeData.logo_url) {
+    const img = document.getElementById('branding-logo-img');
+    img.src = storeData.logo_url;
+    img.style.display = 'block';
+    document.getElementById('branding-logo-placeholder').style.display = 'none';
+  }
+
+  // Mostrar banner actual si existe
+  if (storeData.banner_url) {
+    const img = document.getElementById('branding-banner-img');
+    img.src = storeData.banner_url;
+    img.style.display = 'block';
+    document.getElementById('branding-banner-placeholder').style.display = 'none';
+  }
+
+  // Cargar categorías
+  await refreshBrandingCategories();
+
+  // Click en preview de logo abre file input
+  document.getElementById('branding-logo-preview')?.addEventListener('click', () => {
+    document.getElementById('branding-logo-input').click();
+  });
+  document.getElementById('branding-logo-btn')?.addEventListener('click', () => {
+    document.getElementById('branding-logo-input').click();
+  });
+  document.getElementById('branding-logo-input')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    // Preview local
+    const url = URL.createObjectURL(file);
+    const img = document.getElementById('branding-logo-img');
+    img.src = url; img.style.display = 'block';
+    document.getElementById('branding-logo-placeholder').style.display = 'none';
+    // Subir
+    const status = document.getElementById('branding-logo-status');
+    setStatus(status, 'Subiendo...', '');
+    try {
+      const fd = new FormData(); fd.append('image', file);
+      const res = await apiFetch('/commerce/products/upload-image', { method: 'POST', body: fd });
+      await apiSaveStore({ ...storeData, logo_url: res.url });
+      storeData.logo_url = res.url;
+      setStatus(status, '✓ Logo guardado.', 'ok');
+    } catch {
+      setStatus(status, 'Error al subir el logo.', 'error');
+    }
+  });
+
+  // Click en preview de banner abre file input
+  document.getElementById('branding-banner-preview')?.addEventListener('click', () => {
+    document.getElementById('branding-banner-input').click();
+  });
+  document.getElementById('branding-banner-btn')?.addEventListener('click', () => {
+    document.getElementById('branding-banner-input').click();
+  });
+  document.getElementById('branding-banner-input')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const img = document.getElementById('branding-banner-img');
+    img.src = url; img.style.display = 'block';
+    document.getElementById('branding-banner-placeholder').style.display = 'none';
+    const status = document.getElementById('branding-banner-status');
+    setStatus(status, 'Subiendo...', '');
+    try {
+      const fd = new FormData(); fd.append('image', file);
+      const res = await apiFetch('/commerce/products/upload-image', { method: 'POST', body: fd });
+      await apiSaveStore({ ...storeData, banner_url: res.url });
+      storeData.banner_url = res.url;
+      setStatus(status, '✓ Banner guardado.', 'ok');
+    } catch {
+      setStatus(status, 'Error al subir el banner.', 'error');
+    }
+  });
+
+  // Agregar categoría
+  document.getElementById('branding-add-category-btn')?.addEventListener('click', addBrandingCategory);
+  document.getElementById('branding-new-category')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') addBrandingCategory();
+  });
+}
+
+async function refreshBrandingCategories() {
+  try {
+    categories = await apiFetch('/commerce/categories');
+  } catch { categories = []; }
+
+  const list = document.getElementById('branding-categories-list');
+  if (!list) return;
+
+  if (!categories.length) {
+    list.innerHTML = '<span style="color:var(--text-dim);font-size:.85rem;">Sin categorías todavía.</span>';
+    return;
+  }
+
+  list.innerHTML = categories.map(c => `
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--surface-2,#1a1a1a);border:1px solid var(--border);border-radius:20px;font-size:.82rem;">
+      ${escapeHtml(c.name)}
+      <button type="button" data-cat-id="${escapeHtml(String(c.id))}"
+        style="background:transparent;border:none;color:var(--text-dim);cursor:pointer;font-size:.85rem;line-height:1;padding:0;">✕</button>
+    </span>
+  `).join('');
+
+  list.querySelectorAll('button[data-cat-id]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.catId;
+      try {
+        await apiFetch('/commerce/categories/' + id, { method: 'DELETE' });
+        categories = categories.filter(c => String(c.id) !== id);
+        refreshBrandingCategories();
+      } catch {
+        setStatus(document.getElementById('branding-category-status'), 'No se pudo eliminar.', 'error');
+      }
+    });
+  });
+}
+
+async function addBrandingCategory() {
+  const input  = document.getElementById('branding-new-category');
+  const status = document.getElementById('branding-category-status');
+  const name   = input.value.trim();
+  if (!name) return;
+  try {
+    const cat = await apiFetch('/commerce/categories', { method: 'POST', body: JSON.stringify({ name }) });
+    categories = [...(categories || []), cat];
+    input.value = '';
+    setStatus(status, '✓ Categoría agregada.', 'ok');
+    refreshBrandingCategories();
+  } catch {
+    setStatus(status, 'No se pudo agregar.', 'error');
+  }
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────
