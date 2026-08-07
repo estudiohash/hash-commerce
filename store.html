@@ -381,33 +381,48 @@ body.popup-abierto { overflow: hidden; }
    ===================== */
 .seccion-categoria { width: 100%; padding: 3rem 0 2rem; }
 
-.seccion-categoria--blanco { background: #ffffff !important; }
+/* Light mode: intercalado blanco/negro */
+.seccion-categoria--blanco { background: #ffffff; }
 .seccion-categoria--blanco .catalogo-pagina__titulo,
 .seccion-categoria--blanco .carrusel__ver-todos,
 .seccion-categoria--blanco .producto__nombre,
 .seccion-categoria--blanco .producto__precio,
 .seccion-categoria--blanco .producto__sub,
-.seccion-categoria--blanco .seccion__label { color: #111111 !important; }
-.seccion-categoria--blanco .carrusel__flecha { border-color: #ddd !important; color: #111 !important; background: transparent !important; }
-.seccion-categoria--blanco .carrusel__flecha:hover { background: #111 !important; color: #fff !important; }
-.seccion-categoria--blanco .producto__imagen { background-color: #f0f0f0 !important; }
-.seccion-categoria--blanco .producto { background: transparent !important; color: #111 !important; }
-.seccion-categoria--blanco .producto__overlay-btn--ver { color: #fff !important; }
-[data-theme="dark"] .seccion-categoria--blanco { background: #ffffff !important; }
-[data-theme="dark"] .seccion-categoria--blanco .producto__imagen { background-color: #f0f0f0 !important; }
-[data-theme="dark"] .seccion-categoria--negro { background: #111111 !important; }
-[data-theme="dark"] .seccion-categoria--negro .producto__imagen { background-color: #222 !important; }
+.seccion-categoria--blanco .seccion__label { color: #111111; }
+.seccion-categoria--blanco .carrusel__flecha { border-color: #ddd; color: #111; background: transparent; }
+.seccion-categoria--blanco .carrusel__flecha:hover { background: #111; color: #fff; }
+.seccion-categoria--blanco .producto__imagen { background-color: #f0f0f0; }
 
-.seccion-categoria--negro { background: #111111 !important; }
+.seccion-categoria--negro { background: #111111; }
 .seccion-categoria--negro .catalogo-pagina__titulo,
 .seccion-categoria--negro .carrusel__ver-todos,
 .seccion-categoria--negro .producto__nombre,
 .seccion-categoria--negro .producto__precio,
-.seccion-categoria--negro .producto__sub { color: #ededed !important; }
-.seccion-categoria--negro .producto__imagen { background-color: #222 !important; }
-.seccion-categoria--negro .carrusel__flecha { border-color: #444 !important; color: #ededed !important; background: transparent !important; }
-.seccion-categoria--negro .carrusel__flecha:hover { background: #ededed !important; color: #111 !important; }
-.seccion-categoria--negro .seccion__label { color: #888 !important; }
+.seccion-categoria--negro .producto__sub { color: #ededed; }
+.seccion-categoria--negro .producto__imagen { background-color: #222; }
+.seccion-categoria--negro .carrusel__flecha { border-color: #444; color: #ededed; background: transparent; }
+.seccion-categoria--negro .carrusel__flecha:hover { background: #ededed; color: #111; }
+.seccion-categoria--negro .seccion__label { color: #888; }
+
+/* Dark mode: todo negro */
+[data-theme="dark"] .seccion-categoria--blanco,
+[data-theme="dark"] .seccion-categoria--negro { background: #0f0f0f; }
+[data-theme="dark"] .seccion-categoria--blanco .catalogo-pagina__titulo,
+[data-theme="dark"] .seccion-categoria--blanco .carrusel__ver-todos,
+[data-theme="dark"] .seccion-categoria--blanco .producto__nombre,
+[data-theme="dark"] .seccion-categoria--blanco .producto__precio,
+[data-theme="dark"] .seccion-categoria--blanco .producto__sub,
+[data-theme="dark"] .seccion-categoria--blanco .seccion__label,
+[data-theme="dark"] .seccion-categoria--negro .catalogo-pagina__titulo,
+[data-theme="dark"] .seccion-categoria--negro .carrusel__ver-todos,
+[data-theme="dark"] .seccion-categoria--negro .producto__nombre,
+[data-theme="dark"] .seccion-categoria--negro .producto__precio,
+[data-theme="dark"] .seccion-categoria--negro .producto__sub { color: #ededed; }
+[data-theme="dark"] .seccion-categoria--blanco .producto__imagen,
+[data-theme="dark"] .seccion-categoria--negro .producto__imagen { background-color: #1a1a1a; }
+[data-theme="dark"] .seccion-categoria--blanco .carrusel__flecha,
+[data-theme="dark"] .seccion-categoria--negro .carrusel__flecha { border-color: #333; color: #ededed; background: transparent; }
+[data-theme="dark"] .seccion-categoria--blanco .seccion__label { color: #888; }
 
 .seccion__inner { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--space-md); }
 .seccion__header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.2rem; }
