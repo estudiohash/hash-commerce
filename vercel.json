@@ -1,5 +1,15 @@
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+  "routes": [
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?!www|hashcommerce)(.+)\\.hashcommerce\\.site"
+        }
+      ],
+      "dest": "/store.html"
+    },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
