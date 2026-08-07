@@ -972,7 +972,7 @@ let selectedTemplate = null;
 function loadMyStoreDesign() {
   // Mostrar link público
   const slug = storeData.slug || slugify(storeData.store_name || 'mi-tienda');
-  const url  = `${window.location.origin}/store/${slug}`;
+  const url  = `https://${slug}.hashcommerce.site`;
   const urlEl = document.getElementById('mystore-public-url');
   if (urlEl) urlEl.textContent = url;
 
