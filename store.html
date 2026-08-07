@@ -119,6 +119,8 @@ a { color: inherit; text-decoration: none; }
 /* =====================
    CATÁLOGO / GRID
    ===================== */
+.store-banner { width: 100%; max-height: 320px; overflow: hidden; }
+.store-banner img { width: 100%; height: 320px; object-fit: cover; display: block; }
 .catalogo { width: 100%; background: var(--color-bg); padding: 0; }
 .catalogo-pagina { padding: var(--space-lg) var(--space-md) var(--space-sm); }
 .catalogo-pagina__inner { max-width: var(--max-width); margin: 0 auto; }
@@ -429,6 +431,11 @@ body.popup-abierto { overflow: hidden; }
     <span id="ticker-text-1"></span>
     <span id="ticker-text-2"></span>
   </div>
+</div>
+
+<!-- ── Banner ────────────────────────────────────────────────────────── -->
+<div id="store-banner" class="store-banner" hidden>
+  <img id="store-banner-img" src="" alt="Banner">
 </div>
 
 <!-- ── Catálogo ─────────────────────────────────────────────────────── -->
@@ -782,6 +789,14 @@ function renderStore(data) {
   document.title = data.store_name || 'Tienda';
 
   // Header
+  // Banner
+  const bannerEl  = document.getElementById('store-banner');
+  const bannerImg = document.getElementById('store-banner-img');
+  if (data.banner_url) {
+    bannerImg.src = data.banner_url;
+    bannerEl.removeAttribute('hidden');
+  }
+
   const logoText = document.getElementById('store-logo-text');
   const logoImg  = document.getElementById('store-logo-img');
   if (data.logo_url) {
