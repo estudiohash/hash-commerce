@@ -375,6 +375,61 @@ body.popup-abierto { overflow: hidden; }
 .whatsapp-flotante svg { width: 30px; height: 30px; }
 .whatsapp-flotante:hover { transform: scale(1.08); box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
 
+
+/* =====================
+   CARRUSELES POR CATEGORÍA
+   ===================== */
+.seccion-categoria { width: 100%; padding: 3rem 0 2rem; }
+
+.seccion-categoria--blanco { background: #ffffff !important; }
+.seccion-categoria--blanco .catalogo-pagina__titulo,
+.seccion-categoria--blanco .carrusel__ver-todos,
+.seccion-categoria--blanco .producto__nombre,
+.seccion-categoria--blanco .producto__precio,
+.seccion-categoria--blanco .producto__sub,
+.seccion-categoria--blanco .seccion__label { color: #111111 !important; }
+.seccion-categoria--blanco .carrusel__flecha { border-color: #ddd !important; color: #111 !important; background: transparent !important; }
+.seccion-categoria--blanco .carrusel__flecha:hover { background: #111 !important; color: #fff !important; }
+.seccion-categoria--blanco .producto__imagen { background-color: #f0f0f0 !important; }
+
+.seccion-categoria--negro { background: #111111 !important; }
+.seccion-categoria--negro .catalogo-pagina__titulo,
+.seccion-categoria--negro .carrusel__ver-todos,
+.seccion-categoria--negro .producto__nombre,
+.seccion-categoria--negro .producto__precio,
+.seccion-categoria--negro .producto__sub { color: #ededed !important; }
+.seccion-categoria--negro .producto__imagen { background-color: #222 !important; }
+.seccion-categoria--negro .carrusel__flecha { border-color: #444 !important; color: #ededed !important; background: transparent !important; }
+.seccion-categoria--negro .carrusel__flecha:hover { background: #ededed !important; color: #111 !important; }
+.seccion-categoria--negro .seccion__label { color: #888 !important; }
+
+.seccion__inner { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--space-md); }
+.seccion__header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.2rem; }
+.seccion__label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.3rem; }
+
+.carrusel__controles { display: flex; align-items: center; gap: 0.75rem; }
+.carrusel__flecha {
+  width: 32px; height: 32px; background: transparent;
+  border: 1px solid var(--color-border); color: var(--color-text);
+  font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+.carrusel__flecha:hover { background: var(--color-text); color: var(--color-bg); }
+.carrusel__ver-todos {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--color-text); cursor: pointer;
+  border-bottom: 1px solid currentColor; padding-bottom: 1px;
+  background: none; border-top: none; border-left: none; border-right: none;
+}
+.carrusel__track-wrap { overflow: hidden; }
+.carrusel__track {
+  display: flex; gap: 1rem;
+  transition: transform 0.35s ease;
+}
+.carrusel__track .producto { flex: 0 0 calc(25% - 0.75rem); min-width: 0; }
+@media (max-width: 900px) { .carrusel__track .producto { flex: 0 0 calc(50% - 0.5rem); } }
+@media (max-width: 500px) { .carrusel__track .producto { flex: 0 0 calc(80% - 0.5rem); } }
+
 /* =====================
    ESTADOS
    ===================== */
@@ -445,7 +500,7 @@ body.popup-abierto { overflow: hidden; }
       <div id="store-loading">Cargando tienda...</div>
       <div id="store-error" hidden>Esta tienda no existe o no está disponible.</div>
       <div id="store-empty" hidden>Esta tienda todavía no tiene productos.</div>
-      <div id="products-grid" class="catalogo__grid" hidden></div>
+      <div id="categorias-container"></div>
     </div>
   </div>
 </main>
@@ -715,40 +770,79 @@ document.getElementById('popup-agregar').addEventListener('click', () => {
 });
 
 // ── Render productos ─────────────────────────────────────────────────────────
-function renderProductos(productos) {
-  const grid = document.getElementById('products-grid');
-  grid.innerHTML = productos.map(p => {
-    const img = p.image_url
-      ? `<img src="${escHtml(p.image_url)}" alt="${escHtml(p.name)}">`
-      : `<div class="producto__imagen--placeholder">◻</div>`;
-    const sinStock = p.stock === 0;
-    return `
-      <div class="producto" data-id="${escHtml(String(p.id))}">
-        <div class="producto__imagen">
-          ${img}
-          <div class="producto__imagen-overlay">
-            <button class="producto__overlay-btn producto__overlay-btn--carrito" data-action="carrito" ${sinStock?'disabled':''}>
-              ${sinStock ? 'Sin stock' : '+ Carrito'}
-            </button>
-            <button class="producto__overlay-btn producto__overlay-btn--ver" data-action="ver">Ver detalle</button>
-          </div>
+function crearTarjeta(p) {
+  const img = p.image_url
+    ? `<img src="${escHtml(p.image_url)}" alt="${escHtml(p.name)}">`
+    : `<div class="producto__imagen--placeholder">◻</div>`;
+  const sinStock = p.stock === 0;
+  return `
+    <div class="producto" data-id="${escHtml(String(p.id))}">
+      <div class="producto__imagen">
+        ${img}
+        <div class="producto__imagen-overlay">
+          <button class="producto__overlay-btn producto__overlay-btn--carrito" data-action="carrito" ${sinStock?'disabled':''}>
+            ${sinStock ? 'Sin stock' : '+ Carrito'}
+          </button>
+          <button class="producto__overlay-btn producto__overlay-btn--ver" data-action="ver">Ver detalle</button>
         </div>
-        <div class="producto__info">
-          <span class="producto__nombre">${escHtml(p.name)}</span>
-          <span class="producto__precio">$${Number(p.price).toLocaleString('es-AR')}</span>
-          ${p.stock != null ? `<span class="producto__sub">${p.stock > 0 ? p.stock + ' disp.' : 'Sin stock'}</span>` : ''}
-        </div>
-      </div>`;
-  }).join('');
+      </div>
+      <div class="producto__info">
+        <span class="producto__nombre">${escHtml(p.name)}</span>
+        <span class="producto__precio">$${Number(p.price).toLocaleString('es-AR')}</span>
+        ${p.stock != null ? `<span class="producto__sub">${p.stock > 0 ? p.stock + ' disp.' : 'Sin stock'}</span>` : ''}
+      </div>
+    </div>`;
+}
 
-  // Eventos delegados
-  grid.addEventListener('click', e => {
-    const card    = e.target.closest('.producto');
+function renderCarrusel(nombre, productos, todosLosProductos, index) {
+  const color = index % 2 === 0 ? 'blanco' : 'negro';
+  const seccion = document.createElement('section');
+  seccion.className = `seccion-categoria seccion-categoria--${color}`;
+  const total = productos.length;
+  seccion.innerHTML = `
+    <div class="seccion__inner">
+      <p class="seccion__label">Colección</p>
+      <div class="seccion__header">
+        <h2 class="catalogo-pagina__titulo">${escHtml(nombre)}</h2>
+        <div class="carrusel__controles">
+          <button class="carrusel__flecha" data-dir="-1">&#8592;</button>
+          <button class="carrusel__flecha" data-dir="1">&#8594;</button>
+          <button class="carrusel__ver-todos">Ver todos (${total})</button>
+        </div>
+      </div>
+      <div class="carrusel__track-wrap">
+        <div class="carrusel__track">
+          ${productos.map(p => crearTarjeta(p)).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  let pos = 0;
+  const track = seccion.querySelector('.carrusel__track');
+  const wrap  = seccion.querySelector('.carrusel__track-wrap');
+  const VISIBLE = window.innerWidth < 500 ? 1 : window.innerWidth < 900 ? 2 : 4;
+  const MAX = Math.max(0, total - VISIBLE);
+
+  seccion.querySelectorAll('.carrusel__flecha').forEach(btn => {
+    btn.addEventListener('click', () => {
+      pos = Math.min(MAX, Math.max(0, pos + parseInt(btn.dataset.dir)));
+      const cardW = track.querySelector('.producto').offsetWidth + 16;
+      track.style.transform = `translateX(-${pos * cardW}px)`;
+    });
+  });
+
+  seccion.querySelector('.carrusel__ver-todos').addEventListener('click', () => {
+    track.style.flexWrap = 'wrap';
+    track.style.transform = 'none';
+    wrap.style.overflow = 'visible';
+  });
+
+  seccion.addEventListener('click', e => {
+    const card = e.target.closest('.producto');
     if (!card) return;
-    const id      = card.dataset.id;
-    const product = productos.find(p => String(p.id) === id);
+    const id = card.dataset.id;
+    const product = todosLosProductos.find(p => String(p.id) === id);
     if (!product) return;
-
     const action = e.target.dataset.action;
     if (action === 'carrito') {
       if (product.stock === 0) return;
@@ -760,6 +854,30 @@ function renderProductos(productos) {
       abrirPopup(product);
     }
   });
+
+  return seccion;
+}
+
+function renderProductos(productos) {
+  const container = document.getElementById('categorias-container');
+  container.innerHTML = '';
+  const grupos = {};
+  const sinCat = [];
+  productos.forEach(p => {
+    if (p.category_name) {
+      if (!grupos[p.category_name]) grupos[p.category_name] = [];
+      grupos[p.category_name].push(p);
+    } else {
+      sinCat.push(p);
+    }
+  });
+  let idx = 0;
+  Object.entries(grupos).forEach(([nombre, prods]) => {
+    container.appendChild(renderCarrusel(nombre, prods, productos, idx++));
+  });
+  if (sinCat.length) {
+    container.appendChild(renderCarrusel('Productos', sinCat, productos, idx));
+  }
 }
 
 // ── Cargar tienda ─────────────────────────────────────────────────────────────
@@ -833,9 +951,7 @@ function renderStore(data) {
     return;
   }
 
-  const grid = document.getElementById('products-grid');
   renderProductos(data.products);
-  grid.removeAttribute('hidden');
 }
 
 function showError() {
