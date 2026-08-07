@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tienda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/catalogo.css">
+</head>
+<body>
+
+<!-- ── Header ───────────────────────────────────────────────────────── -->
+<header class="header">
+  <div class="header__inner">
+    <a href="#" class="header__logo">
+      <img id="store-logo-img" src="" alt="" class="header__logo-img" hidden>
+      <span id="store-logo-text">Cargando...</span>
+    </a>
+    <div class="header__acciones">
+      <button class="header__carrito-btn" id="btn-carrito">
+        <svg class="header__carrito-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span id="carrito-count" class="header__carrito-count">0</span>
+      </button>
+      <button class="header__theme-toggle" id="themeToggle" aria-label="Cambiar tema">◑</button>
+    </div>
+  </div>
+
+  <!-- Tabs de categorías -->
+  <nav class="cats-nav" id="cats-nav" hidden>
+    <div class="cats-nav__inner">
+      <button class="cat-tab activo" data-cat="todos">Todo</button>
+    </div>
+  </nav>
+</header>
+
+<!-- ── Banner ────────────────────────────────────────────────────────── -->
+<div id="store-banner" class="store-banner" hidden>
+  <img id="store-banner-img" src="" alt="Banner">
+</div>
+
+<!-- ── Catálogo ─────────────────────────────────────────────────────── -->
+<main class="catalogo">
+  <div id="store-loading" class="estado">Cargando tienda...</div>
+  <div id="store-error" class="estado estado--error" hidden>Esta tienda no existe o no está disponible.</div>
+  <div id="store-empty" class="estado" hidden>Esta tienda todavía no tiene productos.</div>
+  <div id="catalogo-grid" class="catalogo__grid" hidden></div>
+</main>
+
+<!-- ── Footer ───────────────────────────────────────────────────────── -->
+<footer class="footer" id="store-footer" hidden>
+  <div class="footer__inner">
+    <span id="footer-store-name"></span>
+    <span class="footer__copy">Tienda creada con <strong>HASH Commerce</strong></span>
+  </div>
+</footer>
+
+<!-- ── Popup producto ────────────────────────────────────────────────── -->
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup" id="popup">
+    <button class="popup__cerrar" id="popup-cerrar">✕</button>
+    <div class="popup__imagen" id="popup-imagen"></div>
+    <div class="popup__info">
+      <h2 class="popup__nombre" id="popup-nombre"></h2>
+      <p class="popup__precio" id="popup-precio"></p>
+      <p class="popup__stock" id="popup-stock"></p>
+      <p class="popup__desc" id="popup-desc"></p>
+      <button class="popup__btn" id="popup-agregar">+ Agregar al carrito</button>
+      <button class="popup__btn popup__btn--volver" id="popup-volver">← Volver</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Carrito ───────────────────────────────────────────────────────── -->
+<div class="carrito-overlay" id="carrito-section">
+  <div class="carrito-box" style="position:relative;">
+    <button class="carrito-cerrar-x" id="btn-cerrar-carrito">✕</button>
+    <h2 class="carrito-box__titulo">Tu Carrito</h2>
+    <div id="carrito-lista"></div>
+    <div class="carrito-box__total" id="carrito-total"></div>
+    <button class="btn-primary" id="btn-ir-checkout">Finalizar compra →</button>
+    <button class="btn-secondary" id="btn-seguir-comprando">← Seguir comprando</button>
+    <button class="btn-ghost" id="btn-vaciar-carrito">Vaciar carrito</button>
+  </div>
+</div>
+
+<!-- ── Modal checkout ────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-datos">
+  <div class="modal">
+    <button class="carrito-cerrar-x" id="btn-cerrar-modal-datos">✕</button>
+    <h2 class="modal__titulo">Datos de envío</h2>
+    <div class="form-group"><label>Nombre completo</label><input type="text" id="f-nombre" placeholder="Tu nombre" required></div>
+    <div class="form-group"><label>Teléfono</label><input type="tel" id="f-telefono" placeholder="Tu teléfono" required></div>
+    <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="Tu email" required></div>
+    <div class="form-group"><label>Dirección</label><input type="text" id="f-direccion" placeholder="Calle, número, piso" required></div>
+    <div class="form-group"><label>Localidad</label><input type="text" id="f-localidad" placeholder="Localidad" required></div>
+    <div class="form-group"><label>Provincia</label><input type="text" id="f-provincia" placeholder="Provincia" required></div>
+    <button class="btn-primary" id="btn-enviar-pedido">Confirmar pedido →</button>
+    <button class="btn-secondary" id="btn-volver-carrito">← Volver al carrito</button>
+    <div class="checkout-mensaje" id="checkout-mensaje" hidden></div>
+  </div>
+</div>
+
+<!-- ── WhatsApp flotante ─────────────────────────────────────────────── -->
+<a id="whatsapp-flotante" href="#" target="_blank" rel="noopener" class="whatsapp-flotante" aria-label="Escribinos por WhatsApp" hidden>
+  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.558 4.14 1.535 5.877L.057 23.5l5.762-1.512A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.006-1.37l-.36-.213-3.418.896.912-3.33-.234-.374A9.818 9.818 0 1 1 12 21.818z"/>
+  </svg>
+</a>
+
+<script src="js/store.js"></script>
+</body>
+</html>
